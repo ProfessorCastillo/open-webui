@@ -1,0 +1,17 @@
+# Use the official OpenWebUI build as base
+FROM ghcr.io/open-webui/open-webui:main
+
+# Set your custom environment variables
+ENV WEBUI_TITLE="Supply Chain Brutus"
+ENV WEBUI_SUBTITLE="Your Friendly AI Guide to All Things Supply Chain"
+ENV ANONYMIZED_TELEMETRY=false
+
+# If you want to add custom assets:
+# COPY custom-assets/ /app/build/assets/
+# COPY custom-styles/ /app/build/styles/
+
+# Keep the original exposed port
+EXPOSE 8080
+
+# Use the original startup command
+CMD [ "bash", "start.sh"]
