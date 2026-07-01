@@ -239,7 +239,7 @@
 				</table>
 			</div>
 
-			<div class=" absolute top-1 right-1.5 z-20 invisible group-hover:visible flex gap-0.5">
+			<div class=" absolute top-1 right-1.5 z-20 opacity-0 group-hover:opacity-100 focus-within:opacity-100 focus-visible:opacity-100 flex gap-0.5">
 				<Tooltip content={$i18n.t('Copy')}>
 					<button
 						class="p-1 rounded-lg bg-transparent transition"

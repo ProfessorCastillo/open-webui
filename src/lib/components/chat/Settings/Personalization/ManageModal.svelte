@@ -203,9 +203,18 @@
 							{#each sortedMemories as memory (memory.id)}
 								<div
 									class="w-full flex justify-between items-center rounded-xl text-sm py-2 px-3 hover:bg-gray-50 dark:hover:bg-gray-850 transition cursor-pointer"
+									role="button"
+									tabindex="0"
 									on:click={() => {
 										selectedMemory = memory;
 										showEditMemoryModal = true;
+									}}
+									on:keydown={(e) => {
+										if (e.key === 'Enter' || e.key === ' ') {
+											e.preventDefault();
+											selectedMemory = memory;
+											showEditMemoryModal = true;
+										}
 									}}
 								>
 									<div class="flex-1 min-w-0 pr-2">

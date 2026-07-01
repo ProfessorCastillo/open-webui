@@ -514,6 +514,35 @@
 				folderId
 					? 'bg-gray-100 dark:bg-gray-900 selected'
 					: ''}"
+				role="button"
+				tabindex="0"
+				on:keydown={(e) => {
+					if (e.key === 'Enter' || e.key === ' ') {
+						e.preventDefault();
+						if (clickTimer) {
+							clearTimeout(clickTimer);
+							clickTimer = null;
+						}
+
+						clickTimer = setTimeout(async () => {
+							const folder = await getFolderById(localStorage.token, folderId).catch((error) => {
+								toast.error(`${error}`);
+								return null;
+							});
+
+							if (folder) {
+								await selectedFolder.set(folder);
+							}
+
+							await goto('/');
+
+							if ($mobile) {
+								showSidebar.set(!$showSidebar);
+							}
+							clickTimer = null;
+						}, 100); // 100ms delay (typical double-click threshold)
+					}
+				}}
 				on:dblclick={(e) => {
 					if (clickTimer) {
 						clearTimeout(clickTimer); // cancel the single-click action

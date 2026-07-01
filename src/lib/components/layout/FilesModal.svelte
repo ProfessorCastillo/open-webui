@@ -200,6 +200,7 @@
 			<div class="text-lg font-medium self-center">{$i18n.t('Files')}</div>
 			<button
 				class="self-center"
+				aria-label={$i18n.t('Close')}
 				on:click={() => {
 					show = false;
 				}}
@@ -322,7 +323,15 @@
 							{#each files as file (file.id)}
 								<div
 									class="w-full flex justify-between items-center rounded-lg text-sm py-2 px-3 hover:bg-gray-50 dark:hover:bg-gray-850 cursor-pointer"
+									role="button"
+									tabindex="0"
 									on:click={() => openFileViewer(file)}
+									on:keydown={(e) => {
+										if (e.key === 'Enter' || e.key === ' ') {
+											e.preventDefault();
+											openFileViewer(file);
+										}
+									}}
 								>
 									<div class="basis-3/5 min-w-0">
 										<div class="text-ellipsis line-clamp-1">{file.filename}</div>

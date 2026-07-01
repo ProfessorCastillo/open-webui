@@ -763,6 +763,7 @@
 <button
 	id="sidebar-new-chat-button"
 	class="hidden"
+	aria-label={$i18n.t('New Chat')}
 	on:click={() => {
 		goto('/');
 		newChatHandler();
@@ -989,6 +990,8 @@
 	<div
 		bind:this={navElement}
 		id="sidebar"
+		role="navigation"
+		aria-label={$i18n.t('Chat history')}
 		class="h-screen max-h-[100dvh] min-h-screen select-none {$showSidebar
 			? `${$mobile ? 'bg-gray-50 dark:bg-gray-950' : 'bg-gray-50/70 dark:bg-gray-950/70'} z-50`
 			: ' bg-transparent z-0 '} {$isApp

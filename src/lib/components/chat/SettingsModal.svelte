@@ -587,6 +587,43 @@
 			setFilteredSettings();
 		});
 	});
+
+	// a11y: standard ARIA tabs keyboard pattern (WCAG 2.1.1 / 2.4.3).
+	// Roving tabindex — only the selected tab is in the Tab sequence, so Tab moves
+	// from the tab list straight into the panel instead of cycling all tabs first.
+	// Arrow keys (and Home/End) move between tabs.
+	const updateRovingTabindex = async () => {
+		await tick();
+		const container = document.getElementById('settings-tabs-container');
+		if (!container) return;
+		container.querySelectorAll('[role="tab"]').forEach((tab) => {
+			tab.tabIndex = tab.getAttribute('aria-selected') === 'true' ? 0 : -1;
+		});
+	};
+
+	$: if (show) {
+		selectedTab;
+		updateRovingTabindex();
+	}
+
+	const handleTablistKeydown = (event) => {
+		const keys = ['ArrowDown', 'ArrowUp', 'ArrowRight', 'ArrowLeft', 'Home', 'End'];
+		if (!keys.includes(event.key)) return;
+		const container = document.getElementById('settings-tabs-container');
+		if (!container) return;
+		const tabs = Array.from(container.querySelectorAll('[role="tab"]'));
+		if (tabs.length === 0) return;
+		const current = tabs.indexOf(document.activeElement);
+		let next;
+		if (event.key === 'Home') next = 0;
+		else if (event.key === 'End') next = tabs.length - 1;
+		else if (event.key === 'ArrowDown' || event.key === 'ArrowRight')
+			next = current < 0 ? 0 : (current + 1) % tabs.length;
+		else next = current <= 0 ? tabs.length - 1 : current - 1;
+		event.preventDefault();
+		tabs[next].click(); // activates the tab (updates selectedTab)
+		tabs[next].focus();
+	};
 </script>
 
 <Modal size="2xl" bind:show>
@@ -608,6 +645,9 @@
 			<div
 				role="tablist"
 				id="settings-tabs-container"
+				aria-label={$i18n.t('Settings')}
+				tabindex="-1"
+				on:keydown={handleTablistKeydown}
 				class="tabs flex flex-row overflow-x-auto gap-2.5 mx-3 md:pr-4 md:gap-1 md:flex-col flex-1 md:flex-none md:w-50 md:min-h-[min(42rem,calc(100dvh-10rem))] md:max-h-[min(42rem,calc(100dvh-10rem))] dark:text-gray-200 text-sm text-left mb-1 md:mb-0 -translate-y-1"
 			>
 				<div
@@ -880,6 +920,9 @@
 				{/if}
 			</div>
 			<div
+				role="tabpanel"
+				tabindex="0"
+				aria-label={$i18n.t('Settings')}
 				class="flex-1 px-3.5 md:pl-0 md:pr-4.5 md:min-h-[min(42rem,calc(100dvh-10rem))] max-h-[min(42rem,calc(100dvh-10rem))] overflow-y-auto"
 			>
 				{#if selectedTab === 'general'}

@@ -723,6 +723,7 @@
 							>
 								<button
 									class=" bg-white border border-gray-100 dark:border-none dark:bg-white/20 p-1.5 rounded-full pointer-events-auto"
+									aria-label={$i18n.t('Scroll to bottom')}
 									on:click={() => {
 										scrollEnd = true;
 										scrollToBottom();
@@ -851,6 +852,7 @@
 													<button
 														class=" bg-white text-black border border-white rounded-full group-hover:visible invisible transition"
 														type="button"
+														aria-label={$i18n.t('Remove file')}
 														on:click={() => {
 															files.splice(fileIdx, 1);
 															files = files;
@@ -1068,6 +1070,7 @@
 												<Tooltip content={$i18n.t('Stop')}>
 													<button
 														class="bg-white hover:bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-800 transition rounded-full p-1.5"
+														aria-label={$i18n.t('Stop')}
 														on:click={() => {
 															onStop();
 														}}
@@ -1092,6 +1095,7 @@
 												<Tooltip content={$i18n.t('Send message')}>
 													<button
 														id="send-message-button"
+														aria-label={$i18n.t('Send message')}
 														class="{content !== '' || files.length !== 0
 															? 'bg-black text-white hover:bg-gray-900 dark:bg-white dark:text-black dark:hover:bg-gray-100 '
 															: 'text-white bg-gray-200 dark:text-gray-900 dark:bg-gray-700 disabled'} transition rounded-full p-1.5 self-center"

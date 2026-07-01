@@ -839,3 +839,78 @@ body {
 #note-content-container .ProseMirror {
 	padding-bottom: 2rem; /* space for the bottom toolbar */
 }
+
+/*
+  Accessibility: light-theme text contrast (WCAG 2.1 SC 1.4.3, min 4.5:1).
+
+  The muted grays (gray-300/400/500) are used for secondary text and fail 4.5:1
+  on white in light mode (gray-500 = 2.77:1, gray-400 = 2.07:1, gray-300 = 1.58:1).
+  We CANNOT darken the shared --color-gray-* tokens globally: gray-500 is used
+  ~400x with no dark: override and PASSES on the dark background (6.53:1), so a
+  global change would regress dark mode (the default theme).
+
+  Instead we remap only the muted TEXT colors, scoped to html.light, to
+  luminances that clear 4.5:1 on white while keeping the visual ordering
+  (500 darker than 400 darker than 300). Backgrounds/borders are untouched.
+*/
+html.light .text-gray-500 {
+	color: oklch(0.52 0 0); /* 5.51:1 on white */
+}
+html.light .text-gray-400 {
+	color: oklch(0.54 0 0); /* 5.06:1 on white */
+}
+html.light .text-gray-300 {
+	color: oklch(0.56 0 0); /* 4.65:1 on white */
+}
+
+/*
+  Accessibility: global keyboard focus indicator (WCAG 2.1 SC 2.4.7 Focus Visible).
+
+  Many interactive elements in the app apply Tailwind's `outline-hidden` /
+  `outline-none`, which strips the browser's default focus ring. We restore a
+  visible indicator here using `box-shadow` (NOT `outline`) so it cannot be
+  overridden by those utilities. `:focus-visible` scopes it to keyboard / AT
+  navigation, so mouse clicks don't get a persistent ring.
+
+  Two layered shadows (light gap + colored ring) keep the indicator visible on
+  any background, including the dark and OLED themes.
+*/
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible,
+[tabindex]:focus-visible,
+[role='button']:focus-visible,
+[role='link']:focus-visible,
+[role='menuitem']:focus-visible,
+[role='tab']:focus-visible,
+[role='checkbox']:focus-visible,
+[role='switch']:focus-visible,
+[role='option']:focus-visible,
+[contenteditable='true']:focus-visible {
+	outline: 2px solid transparent; /* visible in Windows High Contrast / forced-colors mode */
+	/* Inset ring painted inside the element's own box, so it can never be clipped
+	   by an ancestor's overflow (e.g. the overflow-x-auto action toolbars). */
+	box-shadow: inset 0 0 0 2px #3b82f6 !important; /* blue-500 — !important so per-element shadow utilities can't hide the focus ring */
+	border-radius: 2px;
+}
+
+html.dark a:focus-visible,
+html.dark button:focus-visible,
+html.dark input:focus-visible,
+html.dark select:focus-visible,
+html.dark textarea:focus-visible,
+html.dark summary:focus-visible,
+html.dark [tabindex]:focus-visible,
+html.dark [role='button']:focus-visible,
+html.dark [role='link']:focus-visible,
+html.dark [role='menuitem']:focus-visible,
+html.dark [role='tab']:focus-visible,
+html.dark [role='checkbox']:focus-visible,
+html.dark [role='switch']:focus-visible,
+html.dark [role='option']:focus-visible,
+html.dark [contenteditable='true']:focus-visible {
+	box-shadow: inset 0 0 0 2px #60a5fa !important; /* blue-400, brighter for dark backgrounds */
+}

@@ -128,6 +128,65 @@
 		});
 	}
 
+	// a11y: keyboard focus management for the portaled menu (WCAG 2.1.1 / 2.4.3).
+	// The content is appended to <body>, so focus must be moved into it explicitly
+	// and Tab must be trapped, otherwise keyboard users can never reach the items.
+	function getFocusableItems() {
+		if (!contentEl) return [];
+		return Array.from(
+			contentEl.querySelectorAll(
+				'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+			)
+		).filter((el) => el.offsetWidth > 0 || el.offsetHeight > 0);
+	}
+
+	let wasShown = false;
+	$: if (show && !wasShown) {
+		wasShown = true;
+		tick().then(() => {
+			const items = getFocusableItems();
+			(items[0] ?? contentEl)?.focus?.();
+		});
+	} else if (!show && wasShown) {
+		wasShown = false;
+		// Return focus to the trigger only when focus was inside the menu or lost
+		// (keyboard/Escape/item-activation) — never steal it from an outside click.
+		const active = document.activeElement;
+		if (!active || active === document.body || contentEl?.contains(active)) {
+			triggerEl?.focus?.();
+		}
+	}
+
+	function handleContentKeydown(event) {
+		const items = getFocusableItems();
+		if (items.length === 0) return;
+		const active = document.activeElement;
+
+		if (event.key === 'Tab') {
+			const first = items[0];
+			const last = items[items.length - 1];
+			if (event.shiftKey && (active === first || !contentEl.contains(active))) {
+				event.preventDefault();
+				last.focus();
+			} else if (!event.shiftKey && (active === last || !contentEl.contains(active))) {
+				event.preventDefault();
+				first.focus();
+			}
+		} else if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+			event.preventDefault();
+			const idx = items.indexOf(active);
+			const next =
+				event.key === 'ArrowDown'
+					? idx < 0
+						? 0
+						: (idx + 1) % items.length
+					: idx <= 0
+						? items.length - 1
+						: idx - 1;
+			items[next].focus();
+		}
+	}
+
 	function handleWindowPointerDown(event) {
 		if (!show || !closeOnOutsideClick) return;
 		if (triggerEl?.contains(event.target)) return;
@@ -187,7 +246,9 @@
 		bind:this={contentEl}
 		class={contentClass}
 		role="menu"
+		tabindex="-1"
 		transition:flyAndScale
+		on:keydown={handleContentKeydown}
 		on:click={(e) => e.stopPropagation()}
 		on:pointerdown={(e) => e.stopPropagation()}
 	>

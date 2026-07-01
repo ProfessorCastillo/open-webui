@@ -1246,8 +1246,16 @@
 		<!-- Content -->
 		<div
 			class="flex-1 overflow-y-auto min-h-0 min-w-0"
+			role="button"
+			tabindex="0"
 			on:click={(e) => {
 				if (e.target === e.currentTarget && selectedCount > 0) clearSelection();
+			}}
+			on:keydown={(e) => {
+				if (e.key === 'Enter' || e.key === ' ') {
+					e.preventDefault();
+					if (e.target === e.currentTarget && selectedCount > 0) clearSelection();
+				}
 			}}
 		>
 			{#if previewPort !== null}
